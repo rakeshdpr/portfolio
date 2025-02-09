@@ -3,40 +3,36 @@ body {
     background-color: #f5f5f5;
     text-align: center;
     padding: 20px;
+    margin: 0;
 }
 
-.title {
-    font-size: 2em;
-    margin-bottom: 20px;
+.navbar {
+    background-color: #333;
+    padding: 10px 0;
 }
 
-.portfolio-grid {
+.nav_container {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 15px;
 }
 
-.project-card {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.nav_container li {
+    display: inline;
 }
 
-.view-button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #007bff;
+.nav_container a {
+    text-decoration: none;
     color: white;
-    border: none;
+    font-weight: bold;
+    padding: 10px 15px;
+    transition: 0.3s;
+}
+
+.nav_container a:hover {
+    background-color: #555;
     border-radius: 5px;
-    cursor: pointer;
-}
-
-.view-button:hover {
-    background-color: #0056b3;
-}
-
-.card{
-    width: 18rem;
 }
