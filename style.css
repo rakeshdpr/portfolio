@@ -1,18 +1,20 @@
 body {
-    background-image: url('https://tse4.mm.bing.net/th?id=OIP.BXJr_ZQib_TeZnkEA3K65AHaEK&pid=Api&P=0&h=180');
-    background-size:contain ;
-    background-position: center;
+    background-image: url('./back.jpg');
+    background-size:contain;
+    background-repeat: repeat-y;
+    
     
 }
 .profile_pic {
     display: flex;
-    justify-content: center;
+    justify-content:space-evenly;
+    flex-direction: column;
     background-color: rgba(199, 237, 125,0.1);
     height: 200px;
     width: 200px;
     border-radius: 10%;
     box-shadow: 10px 10px 10px rgba(187, 217, 103, 0.297);
-    flex-direction: column;
+    
     
     
 }
