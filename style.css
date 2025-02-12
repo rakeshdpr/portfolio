@@ -1,7 +1,7 @@
 body {
-    background-image: url('./back.jpg');
-    background-size:contain;
-    background-repeat: repeat-y;
+    background-image: url('./b4.jpg');
+    background-size:cover;
+    
     
     
 }
