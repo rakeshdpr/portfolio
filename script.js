@@ -1,227 +1,248 @@
-// Wait for DOM content to load before executing JavaScript
+// Main JavaScript file for portfolio website
+
 document.addEventListener('DOMContentLoaded', function() {
-    // ============ Navigation Toggle for Mobile ============
-    const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.querySelector('.nav-links');
-    const navLinksItems = document.querySelectorAll('.nav-links a');
-
-    // Toggle mobile menu when hamburger is clicked
-    if (hamburger) {
-        hamburger.addEventListener('click', function() {
-            hamburger.classList.toggle('active');
-            navLinks.classList.toggle('active');
+    // Initialize animations and interactions once DOM is loaded
+    initTypewriterEffect();
+    initProjectFilters();
+    initScrollAnimations();
+    setupContactForm();
+    initSkillBars();
+    
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('mobile-menu-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            menuToggle.classList.toggle('open');
         });
     }
+});
 
-    // Close mobile menu when a nav link is clicked
-    navLinksItems.forEach(item => {
-        item.addEventListener('click', function() {
-            hamburger.classList.remove('active');
-            navLinks.classList.remove('active');
-        });
-    });
-
-    // ============ Active Navigation Link Highlighting ============
-    const sections = document.querySelectorAll('section');
-    const navItems = document.querySelectorAll('.nav-links a');
-
-    // Function to set active navigation link based on scroll position
-    function setActiveLink() {
-        let current = '';
+// Typewriter effect for hero section
+function initTypewriterEffect() {
+    const typewriterElement = document.getElementById('typewriter-text');
+    if (!typewriterElement) return;
+    
+    const titles = ['Web Developer', 'Data Scientist', 'Problem Solver', 'Tech Enthusiast'];
+    let titleIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    
+    function type() {
+        const currentTitle = titles[titleIndex];
         
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop - 100;
-            const sectionHeight = section.clientHeight;
-            if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
-                current = section.getAttribute('id');
-            }
-        });
-
-        navItems.forEach(item => {
-            item.classList.remove('active');
-            if (item.getAttribute('href') === `#${current}`) {
-                item.classList.add('active');
-            }
-        });
-    }
-
-    // Listen for scroll events to update active navigation
-    window.addEventListener('scroll', setActiveLink);
-    
-    // Call setActiveLink on page load
-    setActiveLink();
-
-    // ============ Sticky Navigation ============
-    const navbar = document.getElementById('navbar');
-    const heroSection = document.getElementById('home');
-    
-    // Function to add/remove sticky class based on scroll position
-    function toggleStickyNav() {
-        if (window.scrollY > 50) {
-            navbar.style.padding = '10px 0';
-            navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
-            navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+        if (isDeleting) {
+            typewriterElement.textContent = currentTitle.substring(0, charIndex - 1);
+            charIndex--;
         } else {
-            navbar.style.padding = '15px 0';
-            navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
-            navbar.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+            typewriterElement.textContent = currentTitle.substring(0, charIndex + 1);
+            charIndex++;
         }
+        
+        // Speed adjustments for realistic typing effect
+        let typeSpeed = isDeleting ? 50 : 150;
+        
+        // If complete word
+        if (!isDeleting && charIndex === currentTitle.length) {
+            typeSpeed = 1500; // Pause at end of word
+            isDeleting = true;
+        } else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            titleIndex = (titleIndex + 1) % titles.length;
+            typeSpeed = 500; // Pause before typing next word
+        }
+        
+        setTimeout(type, typeSpeed);
     }
     
-    // Listen for scroll events to update navbar styling
-    window.addEventListener('scroll', toggleStickyNav);
-    
-    // Call toggleStickyNav on page load
-    toggleStickyNav();
+    setTimeout(type, 1000);
+}
 
-    // ============ Project Filtering ============
+// Project filtering functionality
+function initProjectFilters() {
     const filterBtns = document.querySelectorAll('.filter-btn');
-    const projectCards = document.querySelectorAll('.project-card');
-
-    // Filter projects based on category
+    const projectItems = document.querySelectorAll('.project-item');
+    
+    if (filterBtns.length === 0 || projectItems.length === 0) return;
+    
     filterBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            // Remove active class from all buttons
-            filterBtns.forEach(filterBtn => {
-                filterBtn.classList.remove('active');
-            });
-            
-            // Add active class to clicked button
+            // Remove active class from all buttons and add to clicked button
+            filterBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             
-            // Get the filter value
             const filterValue = this.getAttribute('data-filter');
             
             // Show/hide projects based on filter
-            projectCards.forEach(card => {
-                if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
-                    card.style.display = 'block';
+            projectItems.forEach(item => {
+                if (filterValue === 'all' || item.classList.contains(filterValue)) {
+                    item.style.display = 'block';
                     setTimeout(() => {
-                        card.style.opacity = '1';
-                        card.style.transform = 'translateY(0)';
-                    }, 100);
+                        item.style.opacity = 1;
+                        item.style.transform = 'scale(1)';
+                    }, 50);
                 } else {
-                    card.style.opacity = '0';
-                    card.style.transform = 'translateY(20px)';
+                    item.style.opacity = 0;
+                    item.style.transform = 'scale(0.8)';
                     setTimeout(() => {
-                        card.style.display = 'none';
+                        item.style.display = 'none';
                     }, 300);
                 }
             });
         });
     });
+}
 
-    // ============ Skill Progress Animation ============
-    const skillProgressBars = document.querySelectorAll('.skill-progress');
+// Animate elements when scrolled into view
+function initScrollAnimations() {
+    const elements = document.querySelectorAll('.animate-on-scroll');
     
-    // Initialize animated counters for stats
-    const statCounters = document.querySelectorAll('.stat-number');
+    if (elements.length === 0) return;
     
-    // Function to start counter animation
-    function animateCounters() {
-        statCounters.forEach(counter => {
-            const target = parseInt(counter.getAttribute('data-count'));
-            const duration = 2000; // 2 seconds
-            const increment = target / (duration / 16); // 60fps
-            let current = 0;
-            
-            const updateCounter = () => {
-                current += increment;
-                if (current < target) {
-                    counter.textContent = Math.ceil(current);
-                    requestAnimationFrame(updateCounter);
-                } else {
-                    counter.textContent = target;
-                }
-            };
-            
-            updateCounter();
-        });
-    }
-    
-    // Function to animate skill bars when in viewport
-    function animateSkillBars() {
-        skillProgressBars.forEach(bar => {
-            const percentage = bar.getAttribute('data-percentage');
-            bar.style.width = percentage + '%';
-        });
-    }
-
-    // ============ Scroll Animations ============
-    const animateElements = (entries, observer) => {
+    const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                // Check which section is visible
-                if (entry.target.classList.contains('skills')) {
-                    animateSkillBars();
-                } else if (entry.target.classList.contains('about')) {
-                    animateCounters();
-                }
-                
-                // Add fadeInUp animation to the section
-                entry.target.classList.add('fadeInUp');
+                entry.target.classList.add('visible');
                 observer.unobserve(entry.target);
             }
         });
-    };
-
-    // Set up Intersection Observer for animations
-    const options = {
-        threshold: 0.1
-    };
-
-    const observer = new IntersectionObserver(animateElements, options);
+    }, {
+        threshold: 0.2
+    });
     
-    // Observe all sections for animations
-    sections.forEach(section => {
-        observer.observe(section);
+    elements.forEach(element => {
+        observer.observe(element);
     });
+}
 
-    // ============ Contact Form Handling ============
-    const contactForm = document.getElementById('contactForm');
-
-    if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form values
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const subject = document.getElementById('subject').value;
-            const message = document.getElementById('message').value;
-            
-            // Basic form validation
-            if (!name || !email || !subject || !message) {
-                alert('Please fill in all fields');
-                return;
-            }
-            
-            // In a real application, you would send this data to a server
-            // For now, we'll just show a success message
-            alert('Message sent successfully!');
+// Contact form validation and submission
+function setupContactForm() {
+    const contactForm = document.getElementById('contact-form');
+    if (!contactForm) return;
+    
+    contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const messageInput = document.getElementById('message');
+        const statusMsg = document.getElementById('form-status');
+        
+        if (validateForm(nameInput, emailInput, messageInput)) {
+            // Form is valid - in a real application, you would send data to server here
+            // Simulate form submission
+            statusMsg.textContent = "Thanks for your message! I'll get back to you soon.";
+            statusMsg.className = 'success';
             contactForm.reset();
-        });
+            
+            // Hide success message after 5 seconds
+            setTimeout(() => {
+                statusMsg.textContent = '';
+                statusMsg.className = '';
+            }, 5000);
+        }
+    });
+    
+    function validateForm(nameInput, emailInput, messageInput) {
+        let isValid = true;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        // Reset previous validation messages
+        document.querySelectorAll('.error-message').forEach(el => el.remove());
+        
+        // Validate name
+        if (nameInput.value.trim() === '') {
+            showError(nameInput, 'Please enter your name');
+            isValid = false;
+        }
+        
+        // Validate email
+        if (!emailRegex.test(emailInput.value)) {
+            showError(emailInput, 'Please enter a valid email address');
+            isValid = false;
+        }
+        
+        // Validate message
+        if (messageInput.value.trim() === '') {
+            showError(messageInput, 'Please enter your message');
+            isValid = false;
+        }
+        
+        return isValid;
     }
+    
+    function showError(input, message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        input.parentNode.appendChild(errorDiv);
+        input.classList.add('error');
+        
+        // Remove error styling when input changes
+        input.addEventListener('input', function() {
+            this.classList.remove('error');
+            const error = this.parentNode.querySelector('.error-message');
+            if (error) {
+                error.remove();
+            }
+        }, { once: true });
+    }
+}
 
-    // ============ Smooth Scrolling for All Anchor Links ============
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const targetId = this.getAttribute('href');
-            if (targetId === '#') return;
-            
-            const targetElement = document.querySelector(targetId);
-            if (targetElement) {
-                // Calculate offset for navbar height
-                const navHeight = navbar.offsetHeight;
-                const targetPosition = targetElement.offsetTop - navHeight;
-                
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
+// Animate skill bars to show proficiency
+function initSkillBars() {
+    const skillBars = document.querySelectorAll('.skill-progress');
+    
+    if (skillBars.length === 0) return;
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const progressBar = entry.target;
+                const percentage = progressBar.getAttribute('data-progress');
+                progressBar.style.width = percentage + '%';
+                observer.unobserve(progressBar);
             }
         });
+    }, {
+        threshold: 0.2
     });
-});
+    
+    skillBars.forEach(bar => {
+        observer.observe(bar);
+    });
+}
+
+// Dark mode toggle functionality
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    
+    // Save preference to localStorage
+    localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+    
+    // Update toggle button text/icon if it exists
+    const toggleBtn = document.getElementById('dark-mode-toggle');
+    if (toggleBtn) {
+        toggleBtn.innerHTML = isDarkMode ? 
+            '<i class="fas fa-sun"></i>' : 
+            '<i class="fas fa-moon"></i>';
+    }
+}
+
+// Check for saved dark mode preference on load
+function checkDarkModePreference() {
+    if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+        
+        const toggleBtn = document.getElementById('dark-mode-toggle');
+        if (toggleBtn) {
+            toggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+    }
+}
+
+// Initialize dark mode preferences
+checkDarkModePreference();
